@@ -22,12 +22,12 @@ def create_sample_tensor() -> Tensor:
     Returns:
         Tensor of shape (3, 2) as described above.
     """
-    x = None
+
     ##########################################################################
     #                     TODO: Implement this function                      #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    x = Tensor([[0, 10], [100, 0], [0, 0]])
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -62,7 +62,10 @@ def mutate_tensor(
     #                     TODO: Implement this function                      #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    for i in range(len(indices)):
+        x[indices[i][0], indices[i][1]] = values[i]
+        i += 1
+
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -85,13 +88,15 @@ def count_tensor_elements(x: Tensor) -> int:
     Returns:
         num_elements: An integer giving the number of scalar elements in x
     """
-    num_elements = None
+    num_elements = 1
     ##########################################################################
     #                      TODO: Implement this function                     #
     #   You CANNOT use the built-in functions torch.numel(x) or x.numel().   #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    for num in x.shape:
+        num_elements *= num
+
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -108,12 +113,11 @@ def create_tensor_of_pi(M: int, N: int) -> Tensor:
     Returns:
         x: A tensor of shape (M, N) filled with the value 3.14
     """
-    x = None
     ##########################################################################
     #         TODO: Implement this function. It should take one line.        #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    x = torch.full((M,N), 3.14)
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -134,16 +138,27 @@ def multiples_of_ten(start: int, stop: int) -> Tensor:
         x: float64 Tensor giving multiples of ten between start and stop
     """
     assert start <= stop
-    x = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    if start == stop:
+        if start % 10 != 0:
+            x = Tensor(0)
+        else:
+            x = Tensor[start]
+    else:
+        tot = (stop - start) // 10 + 1 if start % 10 == 0 else (stop - start) // 10
+        x = torch.zeros(tot)
+        tens = start + (10 - start % 10)
+        while tens <= stop:
+            x[(tens - start) // 10] = tens
+            tens += 10
+
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
-    return x
+    return x.to(torch.float64)
 
 
 def slice_indexing_practice(x: Tensor) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
@@ -178,7 +193,10 @@ def slice_indexing_practice(x: Tensor) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    last_row = x[-1,:]
+    third_col = x[:,2:3]
+    first_two_rows_three_cols = x[0:2,0:3]
+    even_rows_odd_cols = x[0::2, 1::2]
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -221,7 +239,14 @@ def slice_assignment_practice(x: Tensor) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    x = x[0:4, 0:6]
+
+    x[2: ,0:4:2] = 3
+    x[2: ,1:5:2] = 4
+    x[2: ,  4:6] = 5
+    x[0:2,    0] = 0
+    x[0:2,    1] = 1
+    x[0:2,  2:6] = 2
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
