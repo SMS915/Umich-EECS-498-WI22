@@ -146,7 +146,7 @@ def multiples_of_ten(start: int, stop: int) -> Tensor:
         if start % 10 != 0:
             x = Tensor(0)
         else:
-            x = Tensor[start]
+            x = Tensor([start])
     else:
         tot = (stop - start) // 10 + 1 if start % 10 == 0 else (stop - start) // 10
         x = torch.zeros(tot)
