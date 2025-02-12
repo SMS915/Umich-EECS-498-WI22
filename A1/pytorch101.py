@@ -274,7 +274,8 @@ def shuffle_cols(x: Tensor) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    idx = [0, 0, 2, 1]
+    y = x[:, idx].clone()
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -304,7 +305,8 @@ def reverse_rows(x: Tensor) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    idx = torch.arange(x.shape[0] - 1, -1, -1)
+    y = x[idx].clone()
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -333,7 +335,11 @@ def take_one_elem_per_col(x: Tensor) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+
+
+    idx1 = torch.arange(0,3,1)
+    idx2 = [1, 0, 3]
+    y = x[idx2, idx1].clone()
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -361,7 +367,9 @@ def make_one_hot(x: List[int]) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    y = torch.zeros(len(x),max(x) + 1)
+    y[torch.arange(len(x)), x] = 1
+    y.to(torch.float32)
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -398,7 +406,9 @@ def sum_positive_entries(x: Tensor) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    choose = (x > 0)
+    pos_tensor = x[choose]
+    pos_sum = Tensor([pos_tensor.sum()])
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
