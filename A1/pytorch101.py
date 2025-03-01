@@ -241,8 +241,8 @@ def slice_assignment_practice(x: Tensor) -> Tensor:
     # Replace "pass" statement with your code
     x = x[0:4, 0:6]
 
-    x[2: ,0:4:2] = 3
-    x[2: ,1:5:2] = 4
+    x[2: ,0:3:2] = 3
+    x[2: ,1:4:2] = 4
     x[2: ,  4:6] = 5
     x[0:2,    0] = 0
     x[0:2,    1] = 1
@@ -305,7 +305,7 @@ def reverse_rows(x: Tensor) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    idx = torch.arange(x.shape[0] - 1, -1, -1)
+    idx = torch.arange(-1, (x.shape[0] + 1) * -1, -1)
     y = x[idx].clone()
     ##########################################################################
     #                            END OF YOUR CODE                            #
@@ -434,12 +434,12 @@ def reshape_practice(x: Tensor) -> Tensor:
     Returns:
         y: A reshaped version of x of shape (3, 8) as described above.
     """
-    y = None
+    y_temp = x.clone()
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    y = y_temp.view(2,3,4).swapaxes(1,0).reshape(3,8)
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -462,7 +462,7 @@ def zero_row_min(x: Tensor) -> Tensor:
         [2,  5,  0]
     ])
 
-    Your implementation shoud use reduction and indexing operations. You should
+    Your implementation should use reduction and indexing operations. You should
     not use any Python loops (including comprehensions). The input tensor
     should not be modified.
 
@@ -473,12 +473,14 @@ def zero_row_min(x: Tensor) -> Tensor:
         y: Tensor of shape (M, N) that is a copy of x, except the minimum value
             along each row is replaced with 0.
     """
-    y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    row_min_vals, row_min_idx = torch.min(x, dim = 1)
+    y = x.clone()
+    row_list = torch.arange(x.shape[0])
+    y[row_list, row_min_idx] = 0
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -534,7 +536,13 @@ def batched_matrix_multiply_loop(x: Tensor, y: Tensor) -> Tensor:
     #                      TODO: Implement this function                      #
     ###########################################################################
     # Replace "pass" statement with your code
-    pass
+    B = x.shape[0]
+    N = x.shape[1]
+    M = x.shape[2]
+    P = y.shape[2]
+    z = Tensor(B,N,P)
+    for i in range(B    ):
+        z[i] = x[i].mm(y[i])
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
@@ -565,7 +573,7 @@ def batched_matrix_multiply_noloop(x: Tensor, y: Tensor) -> Tensor:
     #                      TODO: Implement this function                      #
     ###########################################################################
     # Replace "pass" statement with your code
-    pass
+    z = torch.bmm(x, y)
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -595,12 +603,13 @@ def normalize_columns(x: Tensor) -> Tensor:
         y: Tensor of shape (M, N) as described above. It should have the same
             dtype as the input x.
     """
-    y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    mean_matrix = x.clone().sum(0) / x.shape[0]
+    stddev_matrix = (((x - mean_matrix) ** 2).sum(0) / (x.shape[0] - 1)) ** 0.5
+    y = (x - mean_matrix) / stddev_matrix
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -647,7 +656,10 @@ def mm_on_gpu(x: Tensor, w: Tensor) -> Tensor:
     #                      TODO: Implement this function                     #
     ##########################################################################
     # Replace "pass" statement with your code
-    pass
+    gpu_x = x.cuda()
+    gpu_w = w.cuda()
+    y = gpu_x.mm(gpu_w)
+    y = y.cpu()
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
