@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="11e3250b-8c38-4865-ab64-26990276f019" name="更改" comment="still working on A1, working on Integer tensor indexing">
-      <change beforePath="$PROJECT_DIR$/A1/knn.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/A1/knn.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/A1/knn.py" beforeDir="false" afterPath="$PROJECT_DIR$/A1/knn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A2/linear_classifier.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/A2/linear_classifier.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A2/linear_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/A2/linear_classifier.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +77,10 @@
       <workItem from="1740704165501" duration="1972000" />
       <workItem from="1740811885879" duration="4709000" />
       <workItem from="1740883298170" duration="6997000" />
+      <workItem from="1741048756701" duration="2764000" />
+      <workItem from="1741070262635" duration="4600000" />
+      <workItem from="1741086566371" duration="1833000" />
+      <workItem from="1741172021805" duration="6178000" />
     </task>
     <task id="LOCAL-00001" summary="still working on A1, working on Integer tensor indexing">
       <option name="closed" value="true" />

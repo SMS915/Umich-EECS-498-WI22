@@ -8,7 +8,6 @@ import statistics
 from abc import abstractmethod
 from typing import Dict, List, Callable, Optional
 
-
 def hello_linear_classifier():
     """
     This is a sample function that we will try to import and run to ensure that
@@ -505,7 +504,25 @@ def softmax_loss_naive(
     # regularization!                                                           #
     #############################################################################
     # Replace "pass" statement with your code
-    pass
+    num_train = X.shape[0] # N
+    num_classes = W.shape[1] # C
+    for n in range(num_train):
+        scores = W.t().mv(X[n])
+        scores = scores - scores.max() # numeric instability
+        softmax = scores - scores.logsumexp(-1)
+        prob = softmax.exp()
+        # subtract then exp,same as division
+        loss -= softmax[y[n]]
+        for c in range(num_classes):
+            grad = prob[c] - (1 if c == y[n] else 0)
+            dW[:, c] += grad * X[n]
+
+        # regularization
+    loss /= num_train
+    loss += reg * torch.sum(W * W)
+    dW /= num_train
+    dW += 2 * reg * W
+
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
@@ -535,7 +552,19 @@ def softmax_loss_vectorized(
     # regularization!                                                           #
     #############################################################################
     # Replace "pass" statement with your code
-    pass
+    num_train = X.shape[0]
+    num_classes = W.shape[1]
+    scores = torch.matmul(X, W) # (N, C)
+    scores = scores - scores.max(dim=1, keepdim=True).values
+    softmax = scores - scores.logsumexp(-1, True)
+    loss -= softmax[range(num_train),y].sum()
+    loss /= num_train
+    loss += reg * torch.sum(W * W)
+
+    prob = softmax.exp()
+    hot = prob - torch.nn.functional.one_hot(y, num_classes)
+    dW = torch.matmul(X.T, hot) / num_train
+    dW += 2 * reg * W
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
@@ -564,7 +593,8 @@ def softmax_get_search_params():
     # classifier.                                                             #
     ###########################################################################
     # Replace "pass" statement with your code
-    pass
+    learning_rates = [1e-2, 5e-2, 1e-1, 2e-1]
+    regularization_strengths = [1e-2, 1e-1, 1e0]
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
