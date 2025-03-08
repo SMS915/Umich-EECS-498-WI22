@@ -147,7 +147,9 @@ def nn_forward_pass(params: Dict[str, torch.Tensor], X: torch.Tensor):
     # shape (N, C).                                                            #
     ############################################################################
     # Replace "pass" statement with your code
-    pass
+    before = torch.matmul(X, W1) + b1
+    hidden = torch.maximum(before,torch.zeros_like(before)) # (N, H)
+    scores = torch.matmul(hidden, W2) + b2
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -195,7 +197,7 @@ def nn_forward_backward(
     W2, b2 = params["W2"], params["b2"]
     N, D = X.shape
 
-    scores, h1 = nn_forward_pass(params, X)
+    scores, h1 = nn_forward_pass(params, X) # scores(N, C) h1(N, H)
     # If the targets are not given then jump out, we're done
     if y is None:
         return scores
@@ -212,13 +214,18 @@ def nn_forward_backward(
     # (Check Numeric Stability in http://cs231n.github.io/linear-classify/).   #
     ############################################################################
     # Replace "pass" statement with your code
-    pass
+    scores = scores - scores.max(dim=1, keepdim=True).values
+    softmax = scores - scores.logsumexp(-1, True)
+    loss -= softmax[range(N), y].mean()
+    loss += reg * (torch.sum(W1 * W1) + torch.sum(W2 * W2))
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
 
     # Backward pass: compute gradients
     grads = {}
+    grad_l = 0.0
+
     ###########################################################################
     # TODO: Compute the backward pass, computing the derivatives of the       #
     # weights and biases. Store the results in the grads dictionary.          #
