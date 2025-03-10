@@ -4,9 +4,6 @@ WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 """
 import torch
 import random
-import statistics
-
-from torch.nn.functional import one_hot
 
 from linear_classifier import sample_batch
 from typing import Dict, List, Callable, Optional
