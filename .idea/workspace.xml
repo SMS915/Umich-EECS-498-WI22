@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="11e3250b-8c38-4865-ab64-26990276f019" name="更改" comment="still working on A1, working on Integer tensor indexing">
-      <change beforePath="$PROJECT_DIR$/.idea/UMich EECS 498-007.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/UMich EECS 498-007.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/A2/two_layer_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/A2/two_layer_net.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A2/two_layer_net.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/A2/two_layer_net.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3/eecs598/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/A3/eecs598/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3/fully_connected_networks.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/A3/fully_connected_networks.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3/fully_connected_networks.py" beforeDir="false" afterPath="$PROJECT_DIR$/A3/fully_connected_networks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +51,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/CSDIY/Umich EECS 498-007",
+    "last_opened_file_path": "G:/我的云端硬盘/EECS498/A3",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -99,6 +100,10 @@
       <workItem from="1741417834452" duration="955000" />
       <workItem from="1741418812553" duration="198000" />
       <workItem from="1741419025485" duration="6942000" />
+      <workItem from="1741651482339" duration="5392000" />
+      <workItem from="1741672676215" duration="5216000" />
+      <workItem from="1741747420251" duration="2497000" />
+      <workItem from="1741749944802" duration="39000" />
     </task>
     <task id="LOCAL-00001" summary="still working on A1, working on Integer tensor indexing">
       <option name="closed" value="true" />
