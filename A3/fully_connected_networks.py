@@ -355,7 +355,16 @@ class FullyConnectedNet(object):
         # should be initialized to zero.                                      #
         #######################################################################
         # Replace "pass" statement with your code
+        layers = self.num_layers
 
+        dim_in, dim_out = input_dim, None
+        for i, dim_out in enumerate(hidden_dims):
+            self.params[f'W{i + 1}'] = weight_scale * torch.randn(dim_in, dim_out, dtype=dtype, device=device)
+            self.params[f'b{i + 1}'] = torch.zeros(dim_out, dtype=dtype, device=device)
+            dim_in = dim_out
+
+        self.params[f'W{layers}'] = weight_scale * torch.randn(dim_in, num_classes, dtype=dtype, device=device)
+        self.params[f'b{layers}'] = torch.zeros(num_classes, dtype=dtype, device=device)
         #######################################################################
         #                         END OF YOUR CODE                            #
         #######################################################################
@@ -419,7 +428,16 @@ class FullyConnectedNet(object):
         # to each dropout forward pass.                                  #
         ##################################################################
         # Replace "pass" statement with your code
-        pass
+        layers = self.num_layers
+        cache = []  # len: layers
+        # cache0: no dropout Linear_ReLu cache, cache1: dropout Linear_ReLu cache, cache2: Linear cache(last layer)
+        if not self.use_dropout:
+            hidden, cache0 = X, None
+            for i in range(1, layers):
+                hidden, cache0 = Linear_ReLU.forward(hidden, self.params[f'W{i}'], self.params[f'b{i}'])
+                cache.append(cache0)
+            scores, cache2 = Linear.forward(hidden, self.params[f'W{layers}'], self.params[f'b{layers}'])
+            cache.append(cache2)
         #################################################################
         #                      END OF YOUR CODE                         #
         #################################################################
@@ -441,7 +459,19 @@ class FullyConnectedNet(object):
         # the gradient.                                                     #
         #####################################################################
         # Replace "pass" statement with your code
-        pass
+        loss, dscore = softmax_loss(scores, y)
+
+        for i in range(layers):
+            loss += self.reg * self.params[f'W{i + 1}'].pow(2).sum()
+
+        dh, grads[f'W{layers}'], grads[f'b{layers}'] = Linear.backward(dscore, cache[layers - 1])
+        grads[f'W{layers}'] += 2 * self.reg * self.params[f'W{layers}']
+
+        for i in range(layers - 1, 0, -1):
+            dh, grads[f'W{i}'], grads[f'b{i}'] = Linear_ReLU.backward(dh,cache[i - 1])
+            grads[f'W{i}'] += 2 * self.reg * self.params[f'W{i}']
+
+
         ###########################################################
         #                   END OF YOUR CODE                      #
         ###########################################################
@@ -473,10 +503,9 @@ def get_three_layer_network_params():
     # TODO: Change weight_scale and learning_rate so your         #
     # model achieves 100% training accuracy within 20 epochs.     #
     ###############################################################
-    weight_scale = 1e-2   # Experiment with this!
-    learning_rate = 1e-4  # Experiment with this!
+    weight_scale = 5e-1   # Experiment with this!
+    learning_rate = 3e-2 # Experiment with this!
     # Replace "pass" statement with your code
-    pass
     ################################################################
     #                             END OF YOUR CODE                 #
     ################################################################
@@ -488,8 +517,8 @@ def get_five_layer_network_params():
     # TODO: Change weight_scale and learning_rate so your          #
     # model achieves 100% training accuracy within 20 epochs.      #
     ################################################################
-    learning_rate = 2e-3  # Experiment with this!
-    weight_scale = 1e-5   # Experiment with this!
+    weight_scale = 2e-1  # Experiment with this!
+    learning_rate = 1e-1  # Experiment with this!
     # Replace "pass" statement with your code
     pass
     ################################################################
