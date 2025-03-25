@@ -39,7 +39,7 @@ class Linear(object):
         # You will need to reshape the input into rows.                      #
         ######################################################################
         # Replace "pass" statement with your code
-        x_in = x.view(x.shape[0], -1)
+        x_in = x.reshape(x.shape[0], -1)
         out = torch.matmul(x_in, w) + b
         ######################################################################
         #                        END OF YOUR CODE                            #
@@ -69,8 +69,8 @@ class Linear(object):
         # TODO: Implement the linear backward pass.      #
         ##################################################
         # Replace "pass" statement with your code
-        dw = torch.matmul(x.view(x.shape[0], -1).T, dout)
-        dx = torch.matmul(dout, w.T).view(x.shape)
+        dw = torch.matmul(x.reshape(x.shape[0], -1).T, dout)
+        dx = torch.matmul(dout, w.T).contiguous().view(x.shape)
         db = dout.sum(dim=0)
         ##################################################
         #                END OF YOUR CODE                #

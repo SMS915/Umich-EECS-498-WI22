@@ -454,6 +454,9 @@ class DeepConvNet(object):
         C, H, W = input_dims
         C_in = input_dims[0]
         for i, C_out in enumerate(num_filters):
+            if self.batchnorm:
+                self.params[f'gamma{i + 1}'] = torch.ones(C_out, dtype=dtype, device=device)
+                self.params[f'beta{i + 1}'] = torch.zeros(C_out, dtype=dtype, device=device)
             self.params[f'b{i + 1}'] = torch.zeros(C_out, dtype=dtype, device=device)
             if weight_initializer:
                 self.params[f'W{i + 1}'] = weight_initializer(C_in, C_out, 3, True, device=device, dtype=dtype)
@@ -579,18 +582,26 @@ class DeepConvNet(object):
         hidden = X
         for i in range(self.num_layers):
             W,b = self.params[f'W{i + 1}'], self.params[f'b{i + 1}']
-
             if i == self.num_layers - 1:
                 layer = Linear
                 scores, cache = layer.forward(hidden, W, b)
 
-            elif i in self.max_pools:
-                layer = Conv_ReLU_Pool
-                hidden, cache = layer.forward(hidden, W, b, conv_param, pool_param)
+            elif self.batchnorm:
+                beta, gamma = self.params.get(f'beta{i + 1}'), self.params.get(f'gamma{i + 1}')
+                if i in self.max_pools:
+                    layer = Conv_BatchNorm_ReLU_Pool
+                    hidden, cache = layer.forward(hidden, W, b, gamma, beta, conv_param,self.bn_params[i], pool_param)
+                else:
+                    layer = Conv_BatchNorm_ReLU
+                    hidden, cache = layer.forward(hidden, W, b, gamma, beta, conv_param, self.bn_params[i])
 
             else:
-                layer = Conv_ReLU
-                hidden, cache = layer.forward(hidden, W, b, conv_param)
+                if i in self.max_pools:
+                    layer = Conv_ReLU_Pool
+                    hidden, cache = layer.forward(hidden, W, b, conv_param, pool_param)
+                else:
+                    layer = Conv_ReLU
+                    hidden, cache = layer.forward(hidden, W, b, conv_param)
 
             caches.append((cache, layer))
 
@@ -616,6 +627,9 @@ class DeepConvNet(object):
         # Replace "pass" statement with your code
         loss, dl = softmax_loss(scores, y)
         for i, (cache, layer) in reversed(list(enumerate(caches))):
+            if layer != Linear and self.batchnorm:
+                dl, grads[f'W{i + 1}'], grads[f'b{i + 1}'], grads[f'gamma{i + 1}'], grads[f'beta{i + 1}'] = layer.backward(dl, cache)
+            else:
                 dl, grads[f'W{i + 1}'], grads[f'b{i + 1}'] = layer.backward(dl, cache)
 
         for i in range(self.num_layers):
