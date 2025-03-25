@@ -810,7 +810,15 @@ class BatchNorm(object):
             # (https://arxiv.org/abs/1502.03167) might prove to be helpful.  #
             ##################################################################
             # Replace "pass" statement with your code
-            pass
+            N, D = x.shape
+            x_mean = x.mean(axis=0)
+            x_var = (x - x_mean).pow(2).sum(axis=0) / N
+            std_dev = (x_var + eps).sqrt()
+            x_hat = (x - x_mean) / std_dev
+
+            out = gamma * x_hat + beta
+            running_mean = momentum * running_mean + (1 - momentum) * x_mean
+            running_var = momentum * running_var + (1 - momentum) * x_var
             ################################################################
             #                           END OF YOUR CODE                   #
             ################################################################
@@ -823,7 +831,9 @@ class BatchNorm(object):
             # in the out variable.                                         #
             ################################################################
             # Replace "pass" statement with your code
-            pass
+            std_dev = (running_var + eps).sqrt()
+            x_hat = (x - running_mean) / std_dev
+            out = gamma * x_hat + beta
             ################################################################
             #                      END OF YOUR CODE                        #
             ################################################################
@@ -831,6 +841,7 @@ class BatchNorm(object):
             raise ValueError('Invalid forward batchnorm mode "%s"' % mode)
 
         # Store the updated running means back into bn_param
+        cache = (mode, x, x_hat, gamma, std_dev, eps)
         bn_param['running_mean'] = running_mean.detach()
         bn_param['running_var'] = running_var.detach()
 
@@ -865,7 +876,42 @@ class BatchNorm(object):
         # Don't forget to implement train and test mode separately.         #
         #####################################################################
         # Replace "pass" statement with your code
-        pass
+        N,D = dout.shape
+
+        mode, x, x_hat, gamma, std_dev, eps = cache
+        x_mean = x.mean(axis=0)
+        x_var = x.var(axis=0)
+
+        dx_hat = dout * gamma
+        dgamma = (dout * x_hat).sum(axis=0)
+        dbeta = dout.sum(axis=0)
+        dx = dx_hat / std_dev
+
+        if mode == 'train':
+            """
+            first compute the direct derivative of x_mean, std_dev, x about x_hat
+            del(x_hat) / del(x_mean) = -1 / std_dev
+            del(x_hat) / del(std_dev) = -(x - x_mean) / (std_dev) ** 2
+            del(x_hat) / del(x) = 1 / std_dev
+            
+            then compute the derivative of x about x_mean and std_dev
+            del(x_mean) / del(x) = 1 / N
+            del(std_dev) / del(x) = (x - x_mean) * (N - 1) / (N * std_dev)
+            
+            so del(x_hat) / del(x) = -1 / (N * std_dev) - (x - x_mean) ** 2 * (N - 1) / (N ** 2 * std_dev**3) + 1 / std_dev
+            """
+            dmean = (-1 / std_dev * dx_hat).sum(axis=0)
+
+            dx_mean = (dmean / N) * torch.ones_like(x)
+
+            dsigma = (-(x - x_mean) / (std_dev ** 2) * dx_hat).sum(axis=0)
+            dvar = 0.5 / std_dev * dsigma
+            dx_var = (2.0 / N) * (x - x_mean) * dvar
+
+            dx_direct = dx_hat / std_dev
+
+            dx = dx_direct + dx_mean + dx_var
+
         #################################################################
         #                      END OF YOUR CODE                         #
         #################################################################
@@ -898,7 +944,16 @@ class BatchNorm(object):
         # single 80-character line.                                       #
         ###################################################################
         # Replace "pass" statement with your code
-        pass
+        N,D = dout.shape
+
+        mode, x, x_hat, gamma, std_dev, eps = cache
+
+        dx_hat = dout * gamma
+        dgamma = (dout * x_hat).sum(axis=0)
+        dbeta = dout.sum(axis=0)
+
+
+        dx = (dx_hat - (dx_hat.sum(axis=0) + x_hat * (dx_hat * x_hat).sum(axis=0)) / N) / std_dev
         #################################################################
         #                        END OF YOUR CODE                       #
         #################################################################
@@ -935,7 +990,6 @@ class SpatialBatchNorm(object):
         - cache: Values needed for the backward pass
         """
         out, cache = None, None
-
         ################################################################
         # TODO: Implement the forward pass for spatial batch           #
         # normalization.                                               #
@@ -946,7 +1000,11 @@ class SpatialBatchNorm(object):
         # ours is less than five lines.                                #
         ################################################################
         # Replace "pass" statement with your code
-        pass
+        N,C,H,W = x.shape
+        x_temp = x.permute(0,2,3,1) # N, H, W, C, C is same as D in 2d batch_norm
+        x_temp = x_temp.contiguous().view(-1, C)
+        out_temp, cache = BatchNorm.forward(x_temp, gamma, beta, bn_param)
+        out = out_temp.contiguous().view(N, H, W, C).permute(0,3,1,2)
         ################################################################
         #                       END OF YOUR CODE                       #
         ################################################################
@@ -977,7 +1035,11 @@ class SpatialBatchNorm(object):
         # ours is less than five lines.                                 #
         #################################################################
         # Replace "pass" statement with your code
-        pass
+        N, C, H, W = dout.shape
+
+        dout_temp = dout.permute(0,2,3,1).contiguous().view(-1, C)
+        dx, dgamma, dbeta = BatchNorm.backward_alt(dout_temp, cache)
+        dx = dx.contiguous().view(N, H, W, C).permute(0,3,1,2)
         ##################################################################
         #                       END OF YOUR CODE                         #
         ##################################################################
